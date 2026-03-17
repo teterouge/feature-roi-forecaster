@@ -1,6 +1,6 @@
 # feature-roi-forecaster
 
-A financial business case skill for Claude Code. Translates a feature idea into a structured ROI forecast with explicit assumptions, confidence ratings, three financial scenarios, and a defensibility verdict — before a single line of spec is written.
+A financial business case skill for Claude Code. Translates a feature idea into a structured ROI forecast with explicit assumptions, confidence ratings, three financial scenarios, a model integrity score, pathway stress test, opportunity cost comparison, pre-committed kill triggers, and a defensibility verdict — before a single line of spec is written.
 
 Makes "no" a financially defensible answer, not just an opinion.
 
@@ -21,26 +21,49 @@ Four sequential stages:
 **Stage 1 — Impact Pathway Mapping**
 Draws the causal chain: feature → behavior change → leading indicator → lagging metric → business outcome. Rates the pathway quality (Direct / Indirect / Speculative). If no clear pathway can be drawn, that's the finding.
 
+Then runs a mandatory **Pathway Stress Test**: argues against the pathway before accepting it. Answers what breaks the chain, what the weakest embedded logic assumption is, what external factor could invalidate it, and what "false success" looks like — where the feature gets used but the target metric still doesn't move.
+
 **Stage 2 — Input Collection with Confidence Ratings**
 Collects baseline metrics, expected lift, affected population, engineering cost, and revenue per unit. Each input is rated High / Medium / Low confidence based on its source (measured data vs. analogues vs. judgment). Missing inputs are estimated from the analogue library — never silently assumed.
+
+Also collects **opportunity cost context**: what else could the same engineering time build? A feature that looks strong in isolation may look weak relative to what the team is trading away.
 
 **Stage 3 — Three-Scenario ROI Model**
 Conservative, base, and optimistic scenarios. For each: expected annual value, engineering cost, net ROI, payback period, cost of delay per month. Ranges, not point estimates.
 
 **Stage 4 — Defensibility Assessment**
-Rates the case on assumption quality, analogue strength, pathway directness, and reversibility. Produces one of four verdicts:
+Starts with a **Model Integrity Score** — a confidence-tier rating (Decision-grade / Directional / Indicative / Hypothesis only) based on the ratio of High/Medium/Low inputs. This appears before the numbers so a reader knows how much weight to give them before engaging with specifics.
+
+Then rates the case on assumption quality, analogue strength, pathway directness, and reversibility. Produces one of four verdicts:
 - ✅ **Strong** — Build
 - ⚠️ **Conditional** — Build with named assumption to validate
 - ❌ **Weak** — Needs better data before committing
 - 🔬 **Validate first** — Recommend specific experiment before building
 
+**Recommended Action includes pre-committed kill triggers.** "Build with instrumentation" is no longer a vague recommendation — it specifies the leading indicator to watch, the measurement window, and the exact threshold that triggers a kill decision. Written down before a line of code is written, not rationalized after sunk cost accumulates.
+
 ---
 
 ## Installation
+### Marketplace (coming soon)
+
+`feature-roi-forecaster` will be available through the **pm-discipline Claude Code marketplace**, which will aggregate several product-management-focused skills.
+
+Once available:
 
 ```bash
-/plugin install feature-roi-forecaster@pm-discipline
+/plugin marketplace add teterouge/pm-discipline
+/plugin install feature-roi-forecaster
 ```
+
+---
+
+Or manually:
+```bash
+git clone https://github.com/teterouge/feature-roi-forecaster
+claude --plugin-dir ./fetaure-roi-forecaster
+```
+
 
 ---
 
@@ -90,7 +113,22 @@ python skills/feature-roi-forecaster/scripts/roi_model.py --input my_feature.jso
 
 ---
 
-## Structure
+## Output Structure
+
+Every report includes these sections, in order:
+
+1. **Verdict** — one of four ratings plus the single assumption most likely to invalidate the case
+2. **Model Integrity** — confidence tier, input breakdown, primary risk statement
+3. **Impact Pathway** — causal chain with quality rating and full stress test
+4. **Inputs & Confidence** — every input with its source and confidence rating
+5. **Three-Scenario Model** — conservative / base / optimistic with full math shown
+6. **Alternative Uses of Time** — opportunity cost comparison against competing features, or an explicit flag that the comparison is missing
+7. **Defensibility Assessment** — four-dimension rating table
+8. **Recommended Action** — one of: Build / Build with instrumentation (with kill triggers) / Validate first / Defer / Kill
+
+---
+
+## File Structure
 
 ```
 feature-roi-forecaster/
@@ -105,6 +143,8 @@ feature-roi-forecaster/
 │       │   └── roi-model-guide.md
 │       ├── scripts/
 │       │   └── roi_model.py
+│       ├── examples/
+│       │   └── autocomplete-search-roi-forecast.md
 │       └── evals/
 │           └── evals.json
 └── README.md
@@ -116,6 +156,14 @@ feature-roi-forecaster/
 
 **Pathway first, numbers second.** A feature without a clear causal pathway to a business metric shouldn't be modeled — the model would be fiction. The pathway check is the most important gate.
 
+**Stress testing is arguing in good faith.** The point isn't to kill the feature — it's to surface the most dangerous assumptions before they're discovered post-launch. A pathway that survives adversarial scrutiny is worth building on.
+
+**Model Integrity Score protects your credibility.** Labeling a model "Hypothesis only" isn't undermining your case — it's establishing that you understand its limits. Execs burned by overconfident projections will trust the next one less. The integrity score preempts that.
+
+**Kill triggers are commitments, not caveats.** "We'll watch the leading indicator" is a caveat. "If [metric] doesn't hit [threshold] by [date], we kill it" is a commitment. The difference is whether the decision logic is written down before sunk cost accumulates.
+
+**Opportunity cost makes the case relative.** A feature with a $100K expected return looks strong in isolation and weak when the alternative is $400K. Always ask what the denominator is.
+
 **Ranges beat point estimates.** The three-scenario model exists to force honest acknowledgment of uncertainty. A PM who says "$200K–$800K depending on adoption" is more credible than one who says "$450K."
 
 **A kill recommendation is a success.** The skill's job is to prevent bad investments. A well-reasoned kill saves more value than a well-reasoned build.
@@ -126,6 +174,7 @@ feature-roi-forecaster/
 
 ## Part of the pm-discipline Suite
 
+- **codeworth** - Evaluates code base to estimate time to rebuild
 - **spec-auditor** — Adversarial spec review before engineering picks it up
 - **feature-roi-forecaster** ← you are here
 - **post-launch-retro** — Closes the loop between hypotheses and reality
