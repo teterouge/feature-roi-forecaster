@@ -1,0 +1,24 @@
+{
+  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
+  "name": "feature-roi-forecaster",
+  "description": "Builds a financial business case for a feature before it enters a sprint. Four-stage analysis: impact pathway mapping, input collection with confidence ratings, three-scenario ROI model, and defensibility verdict.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Red"
+  },
+  "category": "product-management",
+  "keywords": [
+    "product-management",
+    "roi",
+    "feature-prioritization",
+    "business-case",
+    "impact-analysis",
+    "roadmap"
+  ],
+  "skills": [
+    {
+      "name": "feature-roi-forecaster",
+      "path": "../skills/feature-roi-forecaster"
+    }
+  ]
+}

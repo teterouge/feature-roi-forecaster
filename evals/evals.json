@@ -1,0 +1,30 @@
+{
+  "skill_name": "feature-roi-forecaster",
+  "description": "Test cases for the Feature ROI Forecaster skill",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Should we build an autocomplete feature for our search bar? We're a B2B SaaS with 3,000 monthly active users, $1,200 ACV, and our search abandonment rate is currently 38%. Engineering estimates 3 weeks for 2 engineers.",
+      "expected_output": "Full 4-stage forecast including: (1) pathway from autocomplete → reduced abandonment → more searches completed → engagement improves → retention improves → ARR retained; rated Indirect; (2) inputs table with confidence ratings — baseline 38% abandonment (High), lift +15-25pp abandonment reduction (Medium from analogue), population 3000 MAU (High), ACV $1200/12=$100/month per user (High), eng cost ~$30K (Medium); (3) three scenarios with monthly value, net ROI, payback period, cost of delay; (4) defensibility verdict — likely Conditional with clear assumptions named. Should NOT just endorse building without showing the math.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "We're debating whether to build a mobile app vs just keeping our mobile web experience. Our product has 10,000 MAU, about 40% access on mobile, we're consumer, $5/month subscription. Mobile conversion is 2.1% vs 4.8% on desktop. Engineering says 4 months, 3 engineers.",
+      "expected_output": "Should identify this as a conversion + retention problem, not just a mobile experience problem. Pathway should map mobile web friction → lower conversion → lower mobile MRR. Inputs: affected population = 10,000 × 40% = 4,000 mobile users; baseline 2.1% conversion; expected lift to ~3.5-4% based on mobile app vs web benchmarks; engineering cost ~$120K (3 eng × 4 months × $10K/month). Three scenarios should show meaningful range. Should flag: (1) selection effect — app users are higher intent, not all lift is causal; (2) app store friction as adoption headwind; (3) ongoing maintenance cost not in one-time build cost. Should recommend instrumenting current mobile drop-off before committing.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Is it worth building a self-serve cancellation flow? Right now users have to email us to cancel and our support team spends about 2 hours per cancellation request. We get about 80 cancellation requests per month. Support costs about $45/hour fully loaded. Engineering says 1 week.",
+      "expected_output": "Should correctly identify this as a cost reduction feature, NOT a revenue feature. Model: 80 tickets/month × 2 hours × $45 = $7,200/month in support cost. Engineering cost ~$10K (1 week × 1-2 engineers). Net ROI strongly positive under all scenarios, payback ~6 weeks. BUT should also flag the strategic risk: self-serve cancellation may increase churn rate (removing the save opportunity that currently exists in human cancellation flow). Should recommend: (1) build the flow, (2) instrument cancellation save rate before and after, (3) consider adding a save/pause offer in the flow to offset churn risk. Verdict: Strong ROI but flag the churn risk assumption.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "The CEO wants to add AI-powered insights to our analytics dashboard. Users will get natural language summaries of their data. We have 500 enterprise customers at $15K ACV. Engineering says 3 months, 4 engineers, plus about $8K/month in ongoing LLM API costs.",
+      "expected_output": "Should flag the pathway problem immediately — 'AI-powered insights' does not have an obvious direct pathway to a metric. Should ask or state: what metric is this intended to move? Retention? Expansion? NPS? New sales? Pathway likely Speculative (many steps between insights and revenue). Should identify: (1) ongoing $8K/month LLM cost must be in the model — this changes the economics significantly; (2) $8K/month = $96K/year ongoing, which needs to be subtracted from annual value; (3) affected population is 500 accounts at $15K ACV but feature may only be valuable to a subset; (4) no analogue for 'AI insights' impact on B2B SaaS retention exists with high confidence. Verdict likely: Validate first — recommend a prototype or beta test with 20 customers to validate whether insights are used and whether they correlate with retention before full build.",
+      "files": []
+    }
+  ]
+}
